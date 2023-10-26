@@ -1,3 +1,5 @@
+-- +goose Up
+
 CREATE TABLE IF NOT EXISTS users(
    id uuid DEFAULT uuid_generate_v4 (),
    password VARCHAR (300) NOT NULL,
@@ -7,3 +9,6 @@ CREATE TABLE IF NOT EXISTS users(
    created timestamp default current_timestamp,
    updated timestamp NULL
 );
+
+-- +goose Down
+DROP TABLE users;

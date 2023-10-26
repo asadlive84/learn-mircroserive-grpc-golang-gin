@@ -28,4 +28,5 @@ type Query interface {
 	InsertUser(u User) error
 	GetUserByEmail(email string) (*User, error)
 	GetUserByPhone(phone string) (*User, error)
+	GetUserByID(userID string) (User, error)
 }

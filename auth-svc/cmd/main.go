@@ -12,35 +12,33 @@ import (
 	"github.com/asadlive84/auth-svc/pkg/services"
 	"github.com/jmoiron/sqlx"
 
-	// "github.com/asadlive84/auth-svc/pkg/utils"
 	"google.golang.org/grpc"
 )
 
 func main() {
+
 	c, err := config.LoadConfig()
 
 	if err != nil {
-		log.Fatalln("Failed at config", err)
-	}
-
-	h, err := db.DbInit(db.DBConfig{
-		DbUserName: c.DatabaseUserName,
-		DbName:     c.DatabaseName,
-		DbPassword: c.DbPassword,
-		DbPort:     c.DbPort,
-	})
-
-	if err != nil {
-		log.Fatalln("Failed to database open up:", err)
+		log.Default().Printf("error is %+v", err)
+		log.Fatalln("Failed to getting config", err)
 	}
 
 	dbCOnfig, err := db.NewDatabaseConfig(db.DBConfig{
-		DbUserName: c.DatabaseUserName,
-		DbName:     c.DatabaseName,
-		DbPassword: c.DbPassword,
-		DbPort:     c.DbPort,
-		DbHost:     c.DbHost,
+		POSTGRES_USER:     c.POSTGRES_USER,
+		POSTGRES_PASSWORD: c.POSTGRES_PASSWORD,
+		POSTGRES_DB:       c.POSTGRES_DB,
+		POSTGRES_PORT:     c.POSTGRES_PORT,
+		POSTGRES_HOST:     c.POSTGRES_HOST,
+		PORT:              c.PORT,
+		JWT_SECRET_KEY:    c.JWT_SECRET_KEY,
 	})
+
+	_, err = db.DbInit(dbCOnfig)
+
+	if err != nil {
+		log.Fatalln("Failed to database migration:", err)
+	}
 
 	hdb, err := sqlx.Connect("postgres", dbCOnfig)
 
@@ -48,20 +46,20 @@ func main() {
 		log.Fatalln("Failed to database sqlx open up:", err)
 	}
 
-	lis, err := net.Listen("tcp", c.Port)
+	lis, err := net.Listen("tcp", c.PORT)
 
 	if err != nil {
 		log.Fatalln("Failed to listing:", err)
 	}
 
-	fmt.Println("Auth Svc on", c.Port)
+	fmt.Println("Auth Svc on", c.PORT)
 
 	queryDb := q.QueryInit{
 		Db: hdb,
 	}
 
 	s := services.Server{
-		H: h,
+		// H: h,
 		Q: &queryDb,
 	}
 
@@ -69,7 +67,10 @@ func main() {
 
 	pb.RegisterAuthServiceServer(grpcServer, &s)
 
+	fmt.Println("=============>Server is running<===============")
+
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalln("Failed to serve:", err)
 	}
+
 }

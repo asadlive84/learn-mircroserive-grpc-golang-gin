@@ -15,8 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
-
 func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 
 	var logger = log.New()
@@ -57,19 +55,21 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		}, nil
 	}
 
-	user, err = s.Q.GetUserByPhone(req.Phone)
-	if err != nil && err != q.NotFound {
-		logger.WithFields(log.Fields{"phone": req.Email}).Errorf("an error in get user query %+v", err)
-		return &pb.RegisterResponse{
-			Status: http.StatusBadRequest,
-		}, nil
-	}
+	if req.Phone != "" {
+		user, err = s.Q.GetUserByPhone(req.Phone)
+		if err != nil && err != q.NotFound {
+			logger.WithFields(log.Fields{"phone": req.Email}).Errorf("an error in get user query %+v", err)
+			return &pb.RegisterResponse{
+				Status: http.StatusBadRequest,
+			}, nil
+		}
 
-	if user != nil {
-		logger.WithFields(log.Fields{"phone": req.Email}).Info("phone is exists")
-		return &pb.RegisterResponse{
-			Status: http.StatusBadRequest,
-		}, nil
+		if user != nil {
+			logger.WithFields(log.Fields{"phone": req.Email}).Info("phone is exists")
+			return &pb.RegisterResponse{
+				Status: http.StatusBadRequest,
+			}, nil
+		}
 	}
 
 	err = s.Q.InsertUser(q.User{
@@ -91,5 +91,3 @@ func (s *Server) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.Reg
 		Status: http.StatusCreated,
 	}, nil
 }
-
-
