@@ -1,6 +1,9 @@
 package query
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 func (q *QueryInit) InsertUser(u User) error {
 	stmt, err := q.Db.PrepareNamed("INSERT INTO users (email, password, phone) VALUES (:email, :password, :phone)")
@@ -37,4 +40,24 @@ func (q *QueryInit) GetUserByPhone(phone string) (*User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (q *QueryInit) GetUserByID(userID string) (User, error) {
+	fmt.Println("######################################################")
+	fmt.Printf("GetUserByID: %+v\n", userID)
+	fmt.Println("######################################################")
+
+	var user User
+	const qc = `SELECT * FROM users WHERE id=$1`
+	if err := q.Db.Get(&user, qc, userID); err != nil {
+		if err == sql.ErrNoRows {
+			return user, NotFound
+		}
+		fmt.Println("######################################################")
+		fmt.Printf("sql err: %+v\n", err)
+		fmt.Println("######################################################")
+
+		return user, err
+	}
+	return user, nil
 }

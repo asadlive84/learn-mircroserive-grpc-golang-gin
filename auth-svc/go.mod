@@ -6,6 +6,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/lib/pq v1.10.9
+	github.com/pkg/errors v0.9.1
 )
 
 require (
@@ -27,6 +28,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/pressly/goose v2.7.0+incompatible
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.16.0
 	go.uber.org/atomic v1.9.0 // indirect

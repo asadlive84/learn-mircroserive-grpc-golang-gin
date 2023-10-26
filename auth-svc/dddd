@@ -1,0 +1,47 @@
+# Build stage
+FROM golang:alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git gcc libc-dev
+
+# Set the working directory inside the container
+WORKDIR /src
+
+# Copy the source code and go.mod/go.sum files
+COPY go.mod go.sum ./
+
+# Download and verify Go module dependencies
+RUN go mod download && go mod verify
+
+# Copy the rest of the source code
+COPY . .
+
+# Build the Golang server binary (replace 'main.go' with the actual filename)
+RUN go build -o server cmd/main.go
+
+# Final stage
+FROM alpine:latest
+
+# Create a non-root user for increased security
+RUN adduser -D -g '' appuser
+
+# Set the working directory for the non-root user
+WORKDIR /src
+
+# Copy the built Golang server binary from the builder stage
+COPY --from=builder /src/server .
+
+# Copy the configuration file to the container
+COPY pkg/config/envs/dev.env pkg/config/envs/dev.env
+
+# Copy the migration files to the container
+COPY pkg/migrations /src/pkg/migrations
+
+# Expose the necessary port for the Golang server (replace 50051 with the appropriate port)
+EXPOSE 50051
+
+# Use a non-root user to run the Golang server binary
+USER appuser
+
+# Run the Golang server binary directly without using 'make'
+CMD ["./server"]

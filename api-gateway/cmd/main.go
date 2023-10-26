@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/asadlive84/api-gateway/pkg/auth"
+	"github.com/asadlive84/api-gateway/pkg/product"
 	"github.com/asadlive84/api-gateway/pkg/config"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,7 @@ func main() {
 	r := gin.Default()
 
 	// authSvc := *auth.RegisterRoutes(r, &c)
+	product.RegisterRoutes(r, &c)
 	auth.RegisterRoutes(r, &c)
 
 	r.Run(c.Port)

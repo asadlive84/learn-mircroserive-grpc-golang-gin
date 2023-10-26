@@ -1,20 +1,21 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
-	DatabaseUserName string `mapstructure:"DATABASE_USER_NAME"`
-	DatabaseName     string `mapstructure:"DATABASE_NAME"`
-	DbPassword       string `mapstructure:"DB_PASSWORD"`
-	DbPort           string `mapstructure:"DB_PORT"`
-	DbHost           string `mapstructure:"DB_HOST"`
-	Port             string `mapstructure:"PORT"`
-	DBUrl            string `mapstructure:"DB_URL"`
-	JWTSecretKey     string `mapstructure:"JWT_SECRET_KEY"`
+	POSTGRES_USER     string `mapstructure:"POSTGRES_USER"`
+	POSTGRES_PASSWORD string `mapstructure:"POSTGRES_PASSWORD"`
+	POSTGRES_DB       string `mapstructure:"POSTGRES_DB"`
+	POSTGRES_PORT     string `mapstructure:"POSTGRES_PORT"`
+	POSTGRES_HOST     string `mapstructure:"POSTGRES_HOST"`
+	PORT              string `mapstructure:"PORT"`
+	JWT_SECRET_KEY    string `mapstructure:"JWT_SECRET_KEY"`
 }
 
 func LoadConfig() (config Config, err error) {
-	viper.AddConfigPath("./pkg/config/envs")
+	viper.AddConfigPath("pkg/config/envs")
 	viper.SetConfigName("dev")
 	viper.SetConfigType("env")
 
